@@ -1,7 +1,8 @@
-# ESP-IDF build outputs
+# ESP-IDF
 build/
 managed_components/
 dependencies.lock
+sdkconfig.old
 
 # VS Code
 .vscode/
@@ -12,25 +13,9 @@ __pycache__/
 .venv/
 venv/
 
-# OS files
-.DS_Store
-Thumbs.db
-
 # Logs
 *.log
 
-# Temporary files
-*.tmp
-*.bak
-
-# Large datasets
-datasets/
-*.csv
-*.pcap
-*.pcapng
-
-# Model checkpoints
-*.h5
-*.keras
-*.pt
-*.pth
+# OS files
+Thumbs.db
+.DS_Store
