@@ -3,4 +3,4 @@
 cmake_minimum_required(VERSION 3.22)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(iot_device_test)
+project(esp32s3_gateway)
