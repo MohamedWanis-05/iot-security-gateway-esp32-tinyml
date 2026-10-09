@@ -31,6 +31,7 @@ void feature_extractor_init(
     features->shortest_flow_pkt = 0;
 
     features->flow_duration_ms = 0;
+    features->src_to_dst_second_bytes = 0.0f;
     features->first_packet_time_ms = 0;
     features->last_packet_time_ms = 0;
 }
@@ -70,6 +71,28 @@ void feature_extractor_update(
 
     features->flow_duration_ms =
         (int)(features->last_packet_time_ms - features->first_packet_time_ms);
+    if (features->flow_duration_ms > 0) {
+        float duration_seconds = features->flow_duration_ms / 1000.0f;
+        features->src_to_dst_second_bytes =
+        features->in_bytes / duration_seconds;
+        } else {
+            features->src_to_dst_second_bytes = 0.0f;
+                    }
+                }
+
+void feature_extractor_reset_window(flow_features_t *features)
+{
+    features->in_pkts = 0;
+    features->in_bytes = 0;
+
+    features->longest_flow_pkt = 0;
+    features->shortest_flow_pkt = 0;
+
+    features->flow_duration_ms = 0;
+    features->src_to_dst_second_bytes = 0.0f;
+
+    features->first_packet_time_ms = 0;
+    features->last_packet_time_ms = 0;
 }
 
 void feature_extractor_print(
@@ -89,4 +112,61 @@ void feature_extractor_print(
     ESP_LOGI(TAG, "SHORTEST_FLOW_PKT          : %d", features->shortest_flow_pkt);
     ESP_LOGI(TAG, "FLOW_DURATION_MILLISECONDS : %d", features->flow_duration_ms);
     ESP_LOGI(TAG, "PAYLOAD                    : %s", payload);
+    ESP_LOGI(TAG, "SRC_TO_DST_SECOND_BYTES   : %.2f", features->src_to_dst_second_bytes);
+}
+
+void feature_extractor_print_ml_vector(
+    const flow_features_t *features
+)
+{
+    int protocol_number = 0;
+
+    if (strcmp(features->protocol, "UDP") == 0) {
+        protocol_number = 17;
+    } else if (strcmp(features->protocol, "TCP") == 0) {
+        protocol_number = 6;
+    } else if (strcmp(features->protocol, "ICMP") == 0) {
+        protocol_number = 1;
+    }
+
+    ESP_LOGI(
+        TAG,
+        "ML_VECTOR: [%d, %d, %d, %d, %d, %d, %d, %d, %.2f]",
+        features->l4_src_port,
+        features->l4_dst_port,
+        protocol_number,
+        features->in_pkts,
+        features->in_bytes,
+        features->longest_flow_pkt,
+        features->shortest_flow_pkt,
+        features->flow_duration_ms,
+        features->src_to_dst_second_bytes
+    );
+}
+
+void feature_extractor_detect(
+    const flow_features_t *features
+)
+{
+    /*
+     * Simple rule-based baseline detector.
+     * It is used only as a Week 2 baseline before TinyML integration.
+     */
+
+    if (features->longest_flow_pkt >= 100) {
+        ESP_LOGW(
+            TAG,
+            "DETECTION_RESULT: SUSPICIOUS_LARGE_PACKET"
+        );
+    } else if (features->src_to_dst_second_bytes >= 50.0f) {
+        ESP_LOGW(
+            TAG,
+            "DETECTION_RESULT: SUSPICIOUS_HIGH_THROUGHPUT"
+        );
+    } else {
+        ESP_LOGI(
+            TAG,
+            "DETECTION_RESULT: NORMAL"
+        );
+    }
 }

@@ -1,5 +1,4 @@
 #include <string.h>
-
 #include "wifi_manager.h"
 
 #include "freertos/FreeRTOS.h"
@@ -19,7 +18,6 @@
 #define MAX_RETRY          5
 
 static const char *TAG = "WIFI_MANAGER";
-
 static EventGroupHandle_t s_wifi_event_group;
 static int s_retry_num = 0;
 
@@ -46,9 +44,7 @@ static void wifi_event_handler(
 
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t *event = (ip_event_got_ip_t *) event_data;
-
         ESP_LOGI(TAG, "Connected. IP Address: " IPSTR, IP2STR(&event->ip_info.ip));
-
         s_retry_num = 0;
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
     }
@@ -59,7 +55,6 @@ void wifi_manager_start(void)
     s_wifi_event_group = xEventGroupCreate();
 
     esp_err_t ret = nvs_flash_init();
-
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ESP_ERROR_CHECK(nvs_flash_init());
@@ -73,7 +68,6 @@ void wifi_manager_start(void)
     esp_netif_create_default_wifi_sta();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
     ESP_ERROR_CHECK(

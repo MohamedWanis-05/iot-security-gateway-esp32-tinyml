@@ -16,6 +16,7 @@
 #define UDP_SERVER_PORT 5005
 #define RX_BUFFER_SIZE 128
 #define GATEWAY_IP "192.168.1.14"
+#define FLOW_WINDOW_PACKET_LIMIT 5
 
 static const char *TAG = "UDP_SERVER";
 
@@ -90,10 +91,20 @@ static void udp_server_task(void *pvParameters)
             source_ip,
             source_port,
             len
-        );
+);
 
         feature_extractor_print(&flow_features, rx_buffer);
-    }
+
+        if (flow_features.in_pkts >= FLOW_WINDOW_PACKET_LIMIT) {
+            ESP_LOGI(TAG, "Flow window completed after %d packets", FLOW_WINDOW_PACKET_LIMIT);
+
+            feature_extractor_print_ml_vector(&flow_features);
+            feature_extractor_detect(&flow_features);
+
+            ESP_LOGI(TAG, "Resetting flow window...");
+            feature_extractor_reset_window(&flow_features);
+                }
+        }
 
     close(sock);
     vTaskDelete(NULL);

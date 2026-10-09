@@ -30,19 +30,29 @@ static void udp_client_task(void *pvParameters)
         }
 
         struct sockaddr_in dest_addr;
-
         dest_addr.sin_addr.s_addr = inet_addr(GATEWAY_IP);
         dest_addr.sin_family = AF_INET;
         dest_addr.sin_port = htons(GATEWAY_PORT);
 
         char message[128];
 
-        snprintf(
-            message,
-            sizeof(message),
-            "iot_device=esp32;temperature=25;humidity=60;packet=%d",
-            packet_counter
-        );
+        if (packet_counter % 3 == 0) {
+            snprintf(message, sizeof(message), "small");
+        } else if (packet_counter % 3 == 1) {
+            snprintf(
+                message,
+                sizeof(message),
+                "iot_device=esp32;temperature=25;humidity=60;packet=%d",
+                packet_counter
+            );
+        } else {
+            snprintf(
+                message,
+                sizeof(message),
+                "iot_device=esp32;temperature=25;humidity=60;packet=%d;status=normal;location=test_lab;extra_payload=abcdefghijk",
+                packet_counter
+            );
+        }
 
         int err = sendto(
             sock,

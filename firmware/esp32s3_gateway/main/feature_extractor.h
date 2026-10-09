@@ -23,6 +23,8 @@ typedef struct {
 
     int flow_duration_ms;
 
+    float src_to_dst_second_bytes;
+
     int64_t first_packet_time_ms;
     int64_t last_packet_time_ms;
 } flow_features_t;
@@ -44,6 +46,18 @@ void feature_extractor_update(
 void feature_extractor_print(
     const flow_features_t *features,
     const char *payload
+);
+
+void feature_extractor_print_ml_vector(
+    const flow_features_t *features
+);
+
+void feature_extractor_detect(
+    const flow_features_t *features
+);
+
+void feature_extractor_reset_window(
+    flow_features_t *features
 );
 
 #endif
