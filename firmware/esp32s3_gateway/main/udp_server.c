@@ -64,7 +64,8 @@ static void udp_server_task(void *pvParameters)
 
     ESP_LOGI(TAG, "UDP server listening on port %d", UDP_SERVER_PORT);
 
-    while (1) {
+    while (1)
+    {
         int len = recvfrom(
             sock,
             rx_buffer,
@@ -74,7 +75,8 @@ static void udp_server_task(void *pvParameters)
             &source_addr_len
         );
 
-        if (len < 0) {
+        if (len < 0)
+        {
             ESP_LOGE(TAG, "recvfrom failed");
             continue;
         }
@@ -91,11 +93,12 @@ static void udp_server_task(void *pvParameters)
             source_ip,
             source_port,
             len
-);
+        );
 
         feature_extractor_print(&flow_features, rx_buffer);
 
-        if (flow_features.in_pkts >= FLOW_WINDOW_PACKET_LIMIT) {
+        if (flow_features.in_pkts >= FLOW_WINDOW_PACKET_LIMIT)
+        {
             ESP_LOGI(TAG, "Flow window completed after %d packets", FLOW_WINDOW_PACKET_LIMIT);
 
             feature_extractor_print_ml_vector(&flow_features);
@@ -103,8 +106,8 @@ static void udp_server_task(void *pvParameters)
 
             ESP_LOGI(TAG, "Resetting flow window...");
             feature_extractor_reset_window(&flow_features);
-                }
         }
+    }
 
     close(sock);
     vTaskDelete(NULL);

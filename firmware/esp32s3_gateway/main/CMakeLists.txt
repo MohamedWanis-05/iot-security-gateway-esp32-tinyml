@@ -4,5 +4,6 @@ idf_component_register(
         "wifi_manager.c"
         "udp_server.c"
         "feature_extractor.c"
+        "tcp_server.c"
     INCLUDE_DIRS "."
 )

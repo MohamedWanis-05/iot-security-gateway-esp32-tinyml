@@ -10,8 +10,8 @@
 #include "esp_netif.h"
 #include "nvs_flash.h"
 
-#define WIFI_SSID "WE_504934"
-#define WIFI_PASS "*100200300#"
+#define WIFI_SSID "Mah"
+#define WIFI_PASS "12345678"
 
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
@@ -55,10 +55,13 @@ void wifi_manager_start(void)
     s_wifi_event_group = xEventGroupCreate();
 
     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ESP_ERROR_CHECK(nvs_flash_init());
-    } else {
+    }
+    else
+    {
         ESP_ERROR_CHECK(ret);
     }
 
@@ -67,7 +70,7 @@ void wifi_manager_start(void)
 
     esp_netif_create_default_wifi_sta();
 
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT(); // WIFI default initial configuration
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
     ESP_ERROR_CHECK(
@@ -111,9 +114,12 @@ void wifi_manager_start(void)
         portMAX_DELAY
     );
 
-    if (bits & WIFI_CONNECTED_BIT) {
+    if (bits & WIFI_CONNECTED_BIT)
+    {
         ESP_LOGI(TAG, "WiFi connection successful");
-    } else if (bits & WIFI_FAIL_BIT) {
+    }
+    else if (bits & WIFI_FAIL_BIT)
+    {
         ESP_LOGE(TAG, "WiFi connection failed");
     }
 }

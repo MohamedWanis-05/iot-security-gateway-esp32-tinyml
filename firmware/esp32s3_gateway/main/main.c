@@ -5,6 +5,7 @@
 
 #include "wifi_manager.h"
 #include "udp_server.h"
+#include "tcp_server.h"
 
 static const char *TAG = "GATEWAY_MAIN";
 
@@ -20,6 +21,8 @@ void app_main(void)
 
     ESP_LOGI(TAG, "Starting UDP server...");
     udp_server_start();
+
+    tcp_server_start();
 
     while (1) {
         ESP_LOGI(TAG, "Gateway main loop alive");
