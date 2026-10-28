@@ -1,0 +1,4 @@
+## W5500 SPI Ethernet driver. Since ESP-IDF 6.0 it is no longer inside esp_eth;
+## it is downloaded from the ESP Component Registry on the next build.
+dependencies:
+  espressif/w5500: "^2.0.1"
