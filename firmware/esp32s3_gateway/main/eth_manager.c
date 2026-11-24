@@ -1,4 +1,5 @@
 #include "eth_manager.h"
+#include "packet_capture.h"
 
 #include <string.h>
 
@@ -212,6 +213,10 @@ bool eth_manager_start(void)
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP,
                                                &eth_got_ip_handler, NULL));
 
+    err = packet_capture_start(s_eth_handle, mac, s_eth_netif);
+    if (err != ESP_OK) {
+        ESP_LOGW(TAG, "Packet capture unavailable: %s", esp_err_to_name(err));
+    }
     ESP_ERROR_CHECK(esp_eth_start(s_eth_handle));
 
 #if !ETH_USE_DHCP_CLIENT
