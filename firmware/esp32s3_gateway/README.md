@@ -1,30 +1,25 @@
 # ESP32-S3 Gateway Firmware
 
-This ESP-IDF firmware runs on the ESP32-S3 board and acts as the WiFi-based IoT Gateway.
+This ESP-IDF firmware runs the IoT gateway on an ESP32-S3 with Wi-Fi and
+W5500 Ethernet.
 
 ## Functionality
 
-- Connects to WiFi
-- Starts a UDP server on port 5005
-- Receives UDP packets from the ESP32 IoT Device
-- Logs traffic metadata:
-  - Source IP
-  - Source Port
-  - Destination Port
-  - Protocol
-  - Packet Length
-  - Packet Count
-  - Total Bytes
-  - Duration
-  - Payload
+- Starts UDP port 5005 and TCP port 5006 on the available interfaces.
+- Logs socket-level statistics and the Week 2 baseline through the local servers.
+- Captures IPv4 TCP and UDP packets at the W5500 interface for bidirectional
+  flow extraction.
 
 ## Build and Flash
 
 ```bash
 idf.py set-target esp32s3
 idf.py build
-idf.py -p COM5 flash monitor
+idf.py -p PORT flash monitor
 ```
+
+Replace `PORT` with the board's serial port, such as `COM5` on Windows.
+See the [W5500 pin definitions](main/eth_manager.c) for the Ethernet wiring.
 
 ## Ethernet flow extraction
 
