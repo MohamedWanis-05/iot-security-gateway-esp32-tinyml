@@ -1,27 +1,44 @@
-# IoT Security Gateway Using ESP32-S3 and TinyML
+# ESP32-S3 Gateway Firmware
 
-## Overview
+This ESP-IDF firmware runs on the ESP32-S3 board and acts as the WiFi-based IoT Gateway.
 
-This graduation project aims to build a lightweight IoT Security Gateway using ESP32-S3 and TinyML. The system monitors IoT traffic, extracts network metadata/features, and performs lightweight intrusion or anomaly detection on embedded hardware.
+## Functionality
 
-## Current Status
+- Connects to WiFi
+- Starts a UDP server on port 5005
+- Receives UDP packets from the ESP32 IoT Device
+- Logs traffic metadata:
+  - Source IP
+  - Source Port
+  - Destination Port
+  - Protocol
+  - Packet Length
+  - Packet Count
+  - Total Bytes
+  - Duration
+  - Payload
 
-### Week 1 — WiFi UDP Communication Prototype
+## Build and Flash
 
-Completed:
+```bash
+idf.py set-target esp32s3
+idf.py build
+idf.py -p COM5 flash monitor
+```
 
-- ESP32-S3 configured as Gateway.
-- ESP32 configured as IoT Device.
-- Both devices connected to the same WiFi network.
-- Gateway runs a UDP server on port 5005.
-- IoT Device sends UDP packets every 5 seconds.
-- Gateway receives packets and logs traffic metadata.
+## Ethernet flow extraction
 
-Observed metadata:
+The W5500 capture path observes IPv4 TCP and UDP in both directions. Look for
+`FLOW_COLUMNS` in the serial monitor for the column order and `FLOW_CSV` for
+completed flows. A row is emitted after 30 seconds of inactivity, at the
+120-second active timeout, on TCP reset, or when the 32-entry table fills.
 
-```text
-SRC_IP      : 192.168.1.15
-DST_PORT    : 5005
-PROTOCOL    : UDP
-PACKET_LEN  : 54 bytes
-PAYLOAD     : iot_device=esp32;temperature=25;humidity=60;packet=...
+To check both directions, connect a wired host to the gateway and open a TCP
+connection to `192.168.50.1:5006`. Send a short message, close the connection,
+and check for nonzero packet counts in both directions after the idle timeout.
+
+The byte counters and packet size extrema use IPv4 Total Length. Rates use the
+whole observed flow duration, with zero for a zero-duration flow. These are
+firmware definitions. Compare the output against the NF-ToN-IoT-v2 exporter
+on the same capture before using it with a trained model.
+rature=25;humidity=60;packet=...
